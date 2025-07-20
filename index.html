@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Malla Ingeniería Civil Industrial 2021</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f9f9fb;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .malla {
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 20px;
+      padding: 10px;
+    }
+    .semestre {
+      min-width: 200px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      padding: 10px;
+    }
+    .semestre h2 {
+      font-size: 1.2em;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .ramo {
+      padding: 8px;
+      margin: 6px 0;
+      border-radius: 8px;
+      background-color: #ffe0e6;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .ramo.aprobado {
+      background-color: #cceeff;
+    }
+    .ramo.bloqueado {
+      background-color: #fbd0df;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    #creditos-total {
+      text-align: center;
+      font-weight: bold;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+<h1>Malla Ingeniería Civil Industrial 2021</h1>
+<div id="creditos-total">Créditos aprobados: 0</div>
+<div class="malla" id="malla">
+  <!-- Los semestres y cursos se insertarán dinámicamente -->
+</div>
+<script>
+const cursos = [
+  {id:"ma1001",nombre:"Introducción al Cálculo",semestre:1,creditos:6},
+  {id:"ma1101",nombre:"Introducción al Álgebra",semestre:1,creditos:6},
+  {id:"fi1000",nombre:"Introducción a la Física Clásica",semestre:1,creditos:6},
+  {id:"cc1000",nombre:"Herramientas Computacionales",semestre:1,creditos:6},
+  {id:"cd1100",nombre:"Desafíos de Innovación",semestre:1,creditos:6},
+  {id:"bt1211",nombre:"Aplicaciones de la Biología",semestre:1,creditos:3},
+
+  {id:"ma1002",nombre:"Cálculo Diferencial e Integral",semestre:2,creditos:6,prerreq:["ma1001"]},
+  {id:"ma1102",nombre:"Álgebra Lineal",semestre:2,creditos:6,prerreq:["ma1101"]},
+  {id:"fi1100",nombre:"Física Moderna",semestre:2,creditos:6,prerreq:["ma1001","ma1101"]},
+  {id:"cc1002",nombre:"Introducción a la Programación",semestre:2,creditos:6},
+  {id:"cd1201",nombre:"Proyecto de Innovación",semestre:2,creditos:6,prerreq:["cd1100"]},
+  {id:"fg1",nombre:"Formación Integral",semestre:2,creditos:3},
+
+  {id:"ma2001",nombre:"Cálculo en Varias Variables",semestre:3,creditos:6,prerreq:["ma1002","ma1102"]},
+  {id:"ma2601",nombre:"Ecuaciones Diferenciales",semestre:3,creditos:6,prerreq:["ma1002","ma1102"]},
+  {id:"fi2001",nombre:"Mecánica",semestre:3,creditos:6,prerreq:["fi1100","ma1002","ma1102"]},
+  {id:"fi2901",nombre:"Métodos Experimentales",semestre:3,creditos:6,prerreq:["fi1100","ma1002"]},
+  {id:"iq2211",nombre:"Química",semestre:3,creditos:6},
+
+  {id:"ma2002",nombre:"Cálculo Avanzado",semestre:4,creditos:6,prerreq:["ma2001","ma2601"]},
+  {id:"in2201",nombre:"Economía",semestre:4,creditos:6,prerreq:["ma2001"]},
+  {id:"fi2002",nombre:"Electromagnetismo",semestre:4,creditos:6,prerreq:["ma2001","ma2601","fi2003"]},
+  {id:"fi2004",nombre:"Termodinámica",semestre:4,creditos:6,prerreq:["iq2211","fi2001","ma2001"]},
+  {id:"fg2",nombre:"Formación Integral",semestre:4,creditos:3},
+
+  {id:"in3171",nombre:"Modelamiento y Optimización",semestre:5,creditos:6,prerreq:["ma2002"]},
+  {id:"in3141",nombre:"Probabilidades",semestre:5,creditos:6,prerreq:["ma2001"]},
+  {id:"in3101",nombre:"Taller de Liderazgo",semestre:5,creditos:6,prerreq:["cd2201"]},
+  {id:"electivo1",nombre:"Electivo",semestre:5,creditos:6},
+
+  {id:"in3272",nombre:"Decisiones bajo Incertidumbre",semestre:6,creditos:6,prerreq:["in3171","in3141"]},
+  {id:"in3221",nombre:"Teoría de Juegos",semestre:6,creditos:6,prerreq:["in2201","in3141"]},
+  {id:"in3242",nombre:"Estadística",semestre:6,creditos:6,prerreq:["in3141"]},
+  {id:"in3301",nombre:"Evaluación de Proyectos",semestre:6,creditos:6,prerreq:["in2201","in3141"]},
+
+  {id:"in4102",nombre:"Taller Diseño de Proyectos",semestre:7,creditos:6,prerreq:["in3171","in3101"]},
+  {id:"in4123",nombre:"Macroeconomía",semestre:7,creditos:6,prerreq:["in2201","in3141"]},
+  {id:"in4143",nombre:"Análisis de Datos",semestre:7,creditos:6,prerreq:["in3242"]},
+  {id:"electivo2",nombre:"Electivo",semestre:7,creditos:6},
+
+  {id:"in4273",nombre:"Gestión de Operaciones",semestre:8,creditos:6,prerreq:["in3171","in3242"]},
+  {id:"in4261",nombre:"Marketing",semestre:8,creditos:6,prerreq:["in3171","in3242","in3301"]},
+  {id:"in4232",nombre:"Finanzas",semestre:8,creditos:6,prerreq:["in3301"]},
+  {id:"in4151",nombre:"Ingeniería de la Información",semestre:8,creditos:6,prerreq:["cc1002","in3272","in3242"]},
+  {id:"electivo3",nombre:"Electivo",semestre:8,creditos:6},
+
+  {id:"esp1",nombre:"Especialización",semestre:9,creditos:6},
+  {id:"esp2",nombre:"Especialización",semestre:9,creditos:6},
+  {id:"esp3",nombre:"Especialización",semestre:9,creditos:6},
+  {id:"in5112",nombre:"Dirección Estratégica",semestre:9,creditos:6,prerreq:["in4273","in4261","in4232"]},
+  {id:"in5111",nombre:"Comportamiento Organizacional",semestre:9,creditos:6,prerreq:["in4191"]},
+
+  {id:"esp4",nombre:"Especialización",semestre:10,creditos:6},
+  {id:"esp5",nombre:"Especialización",semestre:10,creditos:6},
+  {id:"esp6",nombre:"Electivo de Especialidad",semestre:10,creditos:6},
+  {id:"esp7",nombre:"Electivo de Especialidad",semestre:10,creditos:6},
+
+  {id:"in6193",nombre:"Proyecto de Título",semestre:11,creditos:15},
+  {id:"in6192",nombre:"Práctica Profesional Extendida",semestre:11,creditos:15},
+  {id:"ei2090",nombre:"Examen de Inglés II",semestre:11,creditos:0},
+];
+
+function verificarBloqueado(ramoId, aprobados) {
+  const curso = cursos.find(c => c.id === ramoId);
+  if (!curso.prerreq) return false;
+  return !curso.prerreq.every(p => aprobados.includes(p));
+}
+
+function renderMalla() {
+  const contenedor = document.getElementById("malla");
+  contenedor.innerHTML = "";
+  const aprobados = JSON.parse(localStorage.getItem("aprobados") || "[]");
+  let creditos = 0;
+  for (let s = 1; s <= 11; s++) {
+    const col = document.createElement("div");
+    col.className = "semestre";
+    col.innerHTML = `<h2>${s}° Semestre</h2>`;
+    cursos.filter(c => c.semestre === s).forEach(c => {
+      const div = document.createElement("div");
+      div.className = "ramo";
+      div.textContent = c.nombre;
+      div.dataset.id = c.id;
+      div.dataset.creditos = c.creditos;
+
+      if (aprobados.includes(c.id)) {
+        div.classList.add("aprobado");
+        creditos += c.creditos;
+      } else if (verificarBloqueado(c.id, aprobados)) {
+        div.classList.add("bloqueado");
+        const faltan = c.prerreq.filter(p => !aprobados.includes(p));
+        div.title = "Faltan: " + faltan.join(", ");
+      }
+
+      div.addEventListener("click", () => {
+        if (div.classList.contains("bloqueado")) return;
+        const idx = aprobados.indexOf(c.id);
+        if (idx >= 0) aprobados.splice(idx, 1);
+        else aprobados.push(c.id);
+        localStorage.setItem("aprobados", JSON.stringify(aprobados));
+        renderMalla();
+      });
+
+      col.appendChild(div);
+    });
+    contenedor.appendChild(col);
+  }
+  document.getElementById("creditos-total").textContent = `Créditos aprobados: ${creditos}`;
+}
+
+renderMalla();
+</script>
+</body>
+</html>
+
